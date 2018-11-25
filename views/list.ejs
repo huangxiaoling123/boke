@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		body{
+				background: #d0ecf8;
+				background-image: url(http://www.yangqq.com/web/11-blog/images/top.jpg);				
+				background-repeat-y: no-repeat;			
+		}
+		header{
+			width: 800px;
+			margin: auto;
+			height: 190px;
+		}
+		.myID{
+			color:#2593B5;
+			font-size: 24px;
+			font-weight: 700;
+			padding: 30px 30px 20px 50px;
+
+		}
+		
+		.mystyle{
+			color: #2593B5;
+			font-size: 16px;
+			font-family: cursive;
+			width: 450px;
+			padding-left: 30px;
+			text-shadow: #fff 1px 1px 1px;
+		}
+		.mynav{
+			width: 800px;
+			text-align: center;
+			display: inline-block;
+			margin-left: 270px;
+			margin-top: 20px;
+		}
+		.nav-1{
+			float: left;
+			width: 65px;
+			height: 30px;
+			margin: 0px 20px;
+			color: #ffffff;
+			cursor: pointer;
+		}
+		header>img{
+			    position: relative;
+			    top: -135px;
+			    left: -240px;
+			    width: 230px;
+		}
+		ul{
+			margin-top: 10px;
+
+		}
+		ul>li{
+			width: 700px;
+			list-style: none;
+			margin: auto;
+  			padding: 10px 40px 5px 40px;
+			margin-bottom: 15px;
+			background: #e5f3f7;
+			cursor: pointer;
+		}
+		li>h3{
+			color: #333;
+			font-size: 16px;
+		}
+		li>div{
+			color: #5d5d5d;
+			font-size: 14px;
+		}
+		li>h6{
+			color: #5d5d5d;
+			font-size: 12px;
+			font-weight: 400px;
+		}
+		li>p{
+			font-size: 14px;
+			color: #5d5d5d;
+    		font-weight: 700;
+			text-align: right;
+			padding-right: 20px;
+		}
+		.send{
+			display: none;
+			width: 800px;
+			margin: auto;
+			text-align: center;
+		}
+		input{
+			width: 702px;
+			height: 40px;
+			font-size: 18px;
+			font-family: unset;
+			border:#d0ecf8 1px solid;
+			padding-left: 15px;
+
+		}
+		textarea{
+			width: 700px;
+			font-size: 16px;
+			border: 1px solid #d0ecf8;
+			padding-left: 15px;
+			font-family: cursive;
+		}
+		.add{
+			width: 70px;
+			height: 30px;
+			background: #69cbe8;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			margin-right: 5px;
+		}
+		.new1{
+			width: 800px;
+			margin: auto;
+		}
+		.new{
+			width: 740px;
+			margin: auto;
+			background: none;
+			border-bottom: 3px solid #259cc7;
+		}
+		span{
+			color: #ffffff;
+			background: #259cc7;
+			display: inline-block;
+			width: 100px;
+			height: 10px;
+			line-height: 8px;
+			padding: 10px;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<div class="myID"><%= user %>的博客</div>
+		<div class="mystyle">一个人最好的模样大概是平静一点，坦然接受自己所有的弱点......</div>
+		<div class='mynav'>
+			<div class="nav-1">首页</div>
+			<div class="nav-1">关于我</div>
+			<div class="nav-1">慢生活</div>
+			<div class="nav-1">留言</div>
+			<div class="nav-1 nav-send">发布博客</div>
+		</div>
+		<img src="http://www.yangqq.com/web/30/images/love.png" alt="">
+		
+	</header>
+
+	<div class='box'>
+		<div class='send'>		
+			<input type="text" placeholder='标题'><br>
+			<textarea name="" id="" cols="30" rows="10"></textarea><br>
+			<button class='add'>发布</button>
+		</div>
+		<div class="new1">
+			<p class="new"><span>最新内容</span></p>
+		</div>
+		<div>
+			<ul>
+				<% for(var i=0; i<list.length; i++){ %>
+					<li>
+						<h3><%= list[i].title %></h3>
+						<div class="mycont"><%= list[i].cont %></div>
+						<h6 class="mytime"><%= list[i].time %></h6>
+						<p onclick='del(this)'>删除</p>
+					</li>
+				<% } %>
+			</ul>
+		</div>
+	</div>
+
+	<script src="../public/js/jquery-1.11.1.min.js"></script>
+	<script>
+		
+		//增加商品
+		$('.add').click(function(event) {
+			if ($('textarea').val()=='') {
+				alert('请输入商品名字！')
+			}else{
+				$.ajax({
+					url: 'http://localhost:8989/addList',
+					method: 'post',
+					dataType: 'json',
+					data: {content: $('textarea').val(),title:$('input').eq(0).val()},
+					success:function(res,ststus,xhr){
+						var tag=$(`<li><h3>${res.title}</h3>
+						<div>${res.cont}</div>
+						<h6>${res.time}</h6>
+						<p onclick='del(this)'>删除</p></li>`);
+						$('ul').prepend(tag)
+						$('.proname').val('')
+					}
+				})
+			
+			}
+			$('input').eq(0).val('');
+			$('textarea').val('');
+		})
+
+		//删除商品
+		function del(e){
+			$.ajax({
+				url: 'http://localhost:8989/delList',
+				method:'post',
+				dataType: 'json',
+				data: {content: $(e).siblings('.mycont').html(),time1:$(e).siblings('.mytime').html()},
+				success:function(res,status,xhr){
+					// console.log(res);
+					//如果后台删除数据成功  直接在前台删除此条数据
+					if (res.n=1) {
+						$(e).parent().remove()
+					}
+
+				}
+			})
+			
+		}
+
+		$('.nav-send').click(function(event) {
+				$('.send').slideToggle()
+			});
+	</script>
+
+</body>
+</html>
